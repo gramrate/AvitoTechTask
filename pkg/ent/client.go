@@ -445,7 +445,7 @@ func (c *TeamClient) UpdateOne(_m *Team) *TeamUpdateOne {
 }
 
 // UpdateOneID returns an update builder for the given id.
-func (c *TeamClient) UpdateOneID(id int) *TeamUpdateOne {
+func (c *TeamClient) UpdateOneID(id uuid.UUID) *TeamUpdateOne {
 	mutation := newTeamMutation(c.config, OpUpdateOne, withTeamID(id))
 	return &TeamUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
@@ -462,7 +462,7 @@ func (c *TeamClient) DeleteOne(_m *Team) *TeamDeleteOne {
 }
 
 // DeleteOneID returns a builder for deleting the given entity by its id.
-func (c *TeamClient) DeleteOneID(id int) *TeamDeleteOne {
+func (c *TeamClient) DeleteOneID(id uuid.UUID) *TeamDeleteOne {
 	builder := c.Delete().Where(team.ID(id))
 	builder.mutation.id = &id
 	builder.mutation.op = OpDeleteOne
@@ -479,12 +479,12 @@ func (c *TeamClient) Query() *TeamQuery {
 }
 
 // Get returns a Team entity by its id.
-func (c *TeamClient) Get(ctx context.Context, id int) (*Team, error) {
+func (c *TeamClient) Get(ctx context.Context, id uuid.UUID) (*Team, error) {
 	return c.Query().Where(team.ID(id)).Only(ctx)
 }
 
 // GetX is like Get, but panics if an error occurs.
-func (c *TeamClient) GetX(ctx context.Context, id int) *Team {
+func (c *TeamClient) GetX(ctx context.Context, id uuid.UUID) *Team {
 	obj, err := c.Get(ctx, id)
 	if err != nil {
 		panic(err)

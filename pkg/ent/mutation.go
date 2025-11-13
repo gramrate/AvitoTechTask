@@ -816,7 +816,7 @@ type TeamMutation struct {
 	config
 	op             Op
 	typ            string
-	id             *int
+	id             *uuid.UUID
 	team_name      *string
 	clearedFields  map[string]struct{}
 	members        map[uuid.UUID]struct{}
@@ -847,7 +847,7 @@ func newTeamMutation(c config, op Op, opts ...teamOption) *TeamMutation {
 }
 
 // withTeamID sets the ID field of the mutation.
-func withTeamID(id int) teamOption {
+func withTeamID(id uuid.UUID) teamOption {
 	return func(m *TeamMutation) {
 		var (
 			err   error
@@ -897,9 +897,15 @@ func (m TeamMutation) Tx() (*Tx, error) {
 	return tx, nil
 }
 
+// SetID sets the value of the id field. Note that this
+// operation is only accepted on creation of Team entities.
+func (m *TeamMutation) SetID(id uuid.UUID) {
+	m.id = &id
+}
+
 // ID returns the ID value in the mutation. Note that the ID is only available
 // if it was provided to the builder or after it was returned from the database.
-func (m *TeamMutation) ID() (id int, exists bool) {
+func (m *TeamMutation) ID() (id uuid.UUID, exists bool) {
 	if m.id == nil {
 		return
 	}
@@ -910,12 +916,12 @@ func (m *TeamMutation) ID() (id int, exists bool) {
 // That means, if the mutation is applied within a transaction with an isolation level such
 // as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
 // or updated by the mutation.
-func (m *TeamMutation) IDs(ctx context.Context) ([]int, error) {
+func (m *TeamMutation) IDs(ctx context.Context) ([]uuid.UUID, error) {
 	switch {
 	case m.op.Is(OpUpdateOne | OpDeleteOne):
 		id, exists := m.ID()
 		if exists {
-			return []int{id}, nil
+			return []uuid.UUID{id}, nil
 		}
 		fallthrough
 	case m.op.Is(OpUpdate | OpDelete):
@@ -1245,7 +1251,7 @@ type UserMutation struct {
 	assigned_reviews              map[uuid.UUID]struct{}
 	removedassigned_reviews       map[uuid.UUID]struct{}
 	clearedassigned_reviews       bool
-	team                          *int
+	team                          *uuid.UUID
 	clearedteam                   bool
 	done                          bool
 	oldValue                      func(context.Context) (*User, error)
@@ -1537,7 +1543,7 @@ func (m *UserMutation) ResetAssignedReviews() {
 }
 
 // SetTeamID sets the "team" edge to the Team entity by id.
-func (m *UserMutation) SetTeamID(id int) {
+func (m *UserMutation) SetTeamID(id uuid.UUID) {
 	m.team = &id
 }
 
@@ -1552,7 +1558,7 @@ func (m *UserMutation) TeamCleared() bool {
 }
 
 // TeamID returns the "team" edge ID in the mutation.
-func (m *UserMutation) TeamID() (id int, exists bool) {
+func (m *UserMutation) TeamID() (id uuid.UUID, exists bool) {
 	if m.team != nil {
 		return *m.team, true
 	}
@@ -1562,7 +1568,7 @@ func (m *UserMutation) TeamID() (id int, exists bool) {
 // TeamIDs returns the "team" edge IDs in the mutation.
 // Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
 // TeamID instead. It exists only for internal usage by the builders.
-func (m *UserMutation) TeamIDs() (ids []int) {
+func (m *UserMutation) TeamIDs() (ids []uuid.UUID) {
 	if id := m.team; id != nil {
 		ids = append(ids, *id)
 	}

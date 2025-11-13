@@ -26,7 +26,7 @@ type User struct {
 	// The values are being populated by the UserQuery when eager-loading is set.
 	Edges                  UserEdges `json:"edges"`
 	pull_request_reviewers *uuid.UUID
-	team_members           *int
+	team_members           *uuid.UUID
 	selectValues           sql.SelectValues
 }
 
@@ -86,7 +86,7 @@ func (*User) scanValues(columns []string) ([]any, error) {
 		case user.ForeignKeys[0]: // pull_request_reviewers
 			values[i] = &sql.NullScanner{S: new(uuid.UUID)}
 		case user.ForeignKeys[1]: // team_members
-			values[i] = new(sql.NullInt64)
+			values[i] = &sql.NullScanner{S: new(uuid.UUID)}
 		default:
 			values[i] = new(sql.UnknownType)
 		}
@@ -128,11 +128,11 @@ func (_m *User) assignValues(columns []string, values []any) error {
 				*_m.pull_request_reviewers = *value.S.(*uuid.UUID)
 			}
 		case user.ForeignKeys[1]:
-			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for edge-field team_members", value)
+			if value, ok := values[i].(*sql.NullScanner); !ok {
+				return fmt.Errorf("unexpected type %T for field team_members", values[i])
 			} else if value.Valid {
-				_m.team_members = new(int)
-				*_m.team_members = int(value.Int64)
+				_m.team_members = new(uuid.UUID)
+				*_m.team_members = *value.S.(*uuid.UUID)
 			}
 		default:
 			_m.selectValues.Set(columns[i], values[i])

@@ -15,6 +15,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/google/uuid"
 )
 
 // TeamQuery is the builder for querying Team entities.
@@ -107,8 +108,8 @@ func (_q *TeamQuery) FirstX(ctx context.Context) *Team {
 
 // FirstID returns the first Team ID from the query.
 // Returns a *NotFoundError when no Team ID was found.
-func (_q *TeamQuery) FirstID(ctx context.Context) (id int, err error) {
-	var ids []int
+func (_q *TeamQuery) FirstID(ctx context.Context) (id uuid.UUID, err error) {
+	var ids []uuid.UUID
 	if ids, err = _q.Limit(1).IDs(setContextOp(ctx, _q.ctx, ent.OpQueryFirstID)); err != nil {
 		return
 	}
@@ -120,7 +121,7 @@ func (_q *TeamQuery) FirstID(ctx context.Context) (id int, err error) {
 }
 
 // FirstIDX is like FirstID, but panics if an error occurs.
-func (_q *TeamQuery) FirstIDX(ctx context.Context) int {
+func (_q *TeamQuery) FirstIDX(ctx context.Context) uuid.UUID {
 	id, err := _q.FirstID(ctx)
 	if err != nil && !IsNotFound(err) {
 		panic(err)
@@ -158,8 +159,8 @@ func (_q *TeamQuery) OnlyX(ctx context.Context) *Team {
 // OnlyID is like Only, but returns the only Team ID in the query.
 // Returns a *NotSingularError when more than one Team ID is found.
 // Returns a *NotFoundError when no entities are found.
-func (_q *TeamQuery) OnlyID(ctx context.Context) (id int, err error) {
-	var ids []int
+func (_q *TeamQuery) OnlyID(ctx context.Context) (id uuid.UUID, err error) {
+	var ids []uuid.UUID
 	if ids, err = _q.Limit(2).IDs(setContextOp(ctx, _q.ctx, ent.OpQueryOnlyID)); err != nil {
 		return
 	}
@@ -175,7 +176,7 @@ func (_q *TeamQuery) OnlyID(ctx context.Context) (id int, err error) {
 }
 
 // OnlyIDX is like OnlyID, but panics if an error occurs.
-func (_q *TeamQuery) OnlyIDX(ctx context.Context) int {
+func (_q *TeamQuery) OnlyIDX(ctx context.Context) uuid.UUID {
 	id, err := _q.OnlyID(ctx)
 	if err != nil {
 		panic(err)
@@ -203,7 +204,7 @@ func (_q *TeamQuery) AllX(ctx context.Context) []*Team {
 }
 
 // IDs executes the query and returns a list of Team IDs.
-func (_q *TeamQuery) IDs(ctx context.Context) (ids []int, err error) {
+func (_q *TeamQuery) IDs(ctx context.Context) (ids []uuid.UUID, err error) {
 	if _q.ctx.Unique == nil && _q.path != nil {
 		_q.Unique(true)
 	}
@@ -215,7 +216,7 @@ func (_q *TeamQuery) IDs(ctx context.Context) (ids []int, err error) {
 }
 
 // IDsX is like IDs, but panics if an error occurs.
-func (_q *TeamQuery) IDsX(ctx context.Context) []int {
+func (_q *TeamQuery) IDsX(ctx context.Context) []uuid.UUID {
 	ids, err := _q.IDs(ctx)
 	if err != nil {
 		panic(err)
@@ -405,7 +406,7 @@ func (_q *TeamQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Team, e
 
 func (_q *TeamQuery) loadMembers(ctx context.Context, query *UserQuery, nodes []*Team, init func(*Team), assign func(*Team, *User)) error {
 	fks := make([]driver.Value, 0, len(nodes))
-	nodeids := make(map[int]*Team)
+	nodeids := make(map[uuid.UUID]*Team)
 	for i := range nodes {
 		fks = append(fks, nodes[i].ID)
 		nodeids[nodes[i].ID] = nodes[i]
@@ -445,7 +446,7 @@ func (_q *TeamQuery) sqlCount(ctx context.Context) (int, error) {
 }
 
 func (_q *TeamQuery) querySpec() *sqlgraph.QuerySpec {
-	_spec := sqlgraph.NewQuerySpec(team.Table, team.Columns, sqlgraph.NewFieldSpec(team.FieldID, field.TypeInt))
+	_spec := sqlgraph.NewQuerySpec(team.Table, team.Columns, sqlgraph.NewFieldSpec(team.FieldID, field.TypeUUID))
 	_spec.From = _q.sql
 	if unique := _q.ctx.Unique; unique != nil {
 		_spec.Unique = *unique

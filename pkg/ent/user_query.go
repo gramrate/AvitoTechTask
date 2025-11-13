@@ -561,8 +561,8 @@ func (_q *UserQuery) loadAssignedReviews(ctx context.Context, query *PullRequest
 	return nil
 }
 func (_q *UserQuery) loadTeam(ctx context.Context, query *TeamQuery, nodes []*User, init func(*User), assign func(*User, *Team)) error {
-	ids := make([]int, 0, len(nodes))
-	nodeids := make(map[int][]*User)
+	ids := make([]uuid.UUID, 0, len(nodes))
+	nodeids := make(map[uuid.UUID][]*User)
 	for i := range nodes {
 		if nodes[i].team_members == nil {
 			continue

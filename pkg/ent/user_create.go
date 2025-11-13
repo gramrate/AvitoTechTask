@@ -87,13 +87,13 @@ func (_c *UserCreate) AddAssignedReviews(v ...*PullRequest) *UserCreate {
 }
 
 // SetTeamID sets the "team" edge to the Team entity by ID.
-func (_c *UserCreate) SetTeamID(id int) *UserCreate {
+func (_c *UserCreate) SetTeamID(id uuid.UUID) *UserCreate {
 	_c.mutation.SetTeamID(id)
 	return _c
 }
 
 // SetNillableTeamID sets the "team" edge to the Team entity by ID if the given value is not nil.
-func (_c *UserCreate) SetNillableTeamID(id *int) *UserCreate {
+func (_c *UserCreate) SetNillableTeamID(id *uuid.UUID) *UserCreate {
 	if id != nil {
 		_c = _c.SetTeamID(*id)
 	}
@@ -246,7 +246,7 @@ func (_c *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
 			Columns: []string{user.TeamColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(team.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(team.FieldID, field.TypeUUID),
 			},
 		}
 		for _, k := range nodes {

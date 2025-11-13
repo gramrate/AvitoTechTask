@@ -27,6 +27,20 @@ func (_c *TeamCreate) SetTeamName(v string) *TeamCreate {
 	return _c
 }
 
+// SetID sets the "id" field.
+func (_c *TeamCreate) SetID(v uuid.UUID) *TeamCreate {
+	_c.mutation.SetID(v)
+	return _c
+}
+
+// SetNillableID sets the "id" field if the given value is not nil.
+func (_c *TeamCreate) SetNillableID(v *uuid.UUID) *TeamCreate {
+	if v != nil {
+		_c.SetID(*v)
+	}
+	return _c
+}
+
 // AddMemberIDs adds the "members" edge to the User entity by IDs.
 func (_c *TeamCreate) AddMemberIDs(ids ...uuid.UUID) *TeamCreate {
 	_c.mutation.AddMemberIDs(ids...)
@@ -49,6 +63,7 @@ func (_c *TeamCreate) Mutation() *TeamMutation {
 
 // Save creates the Team in the database.
 func (_c *TeamCreate) Save(ctx context.Context) (*Team, error) {
+	_c.defaults()
 	return withHooks(ctx, _c.sqlSave, _c.mutation, _c.hooks)
 }
 
@@ -71,6 +86,14 @@ func (_c *TeamCreate) Exec(ctx context.Context) error {
 func (_c *TeamCreate) ExecX(ctx context.Context) {
 	if err := _c.Exec(ctx); err != nil {
 		panic(err)
+	}
+}
+
+// defaults sets the default values of the builder before save.
+func (_c *TeamCreate) defaults() {
+	if _, ok := _c.mutation.ID(); !ok {
+		v := team.DefaultID()
+		_c.mutation.SetID(v)
 	}
 }
 
@@ -98,8 +121,13 @@ func (_c *TeamCreate) sqlSave(ctx context.Context) (*Team, error) {
 		}
 		return nil, err
 	}
-	id := _spec.ID.Value.(int64)
-	_node.ID = int(id)
+	if _spec.ID.Value != nil {
+		if id, ok := _spec.ID.Value.(*uuid.UUID); ok {
+			_node.ID = *id
+		} else if err := _node.ID.Scan(_spec.ID.Value); err != nil {
+			return nil, err
+		}
+	}
 	_c.mutation.id = &_node.ID
 	_c.mutation.done = true
 	return _node, nil
@@ -108,8 +136,12 @@ func (_c *TeamCreate) sqlSave(ctx context.Context) (*Team, error) {
 func (_c *TeamCreate) createSpec() (*Team, *sqlgraph.CreateSpec) {
 	var (
 		_node = &Team{config: _c.config}
-		_spec = sqlgraph.NewCreateSpec(team.Table, sqlgraph.NewFieldSpec(team.FieldID, field.TypeInt))
+		_spec = sqlgraph.NewCreateSpec(team.Table, sqlgraph.NewFieldSpec(team.FieldID, field.TypeUUID))
 	)
+	if id, ok := _c.mutation.ID(); ok {
+		_node.ID = id
+		_spec.ID.Value = &id
+	}
 	if value, ok := _c.mutation.TeamName(); ok {
 		_spec.SetField(team.FieldTeamName, field.TypeString, value)
 		_node.TeamName = value
@@ -151,6 +183,7 @@ func (_c *TeamCreateBulk) Save(ctx context.Context) ([]*Team, error) {
 	for i := range _c.builders {
 		func(i int, root context.Context) {
 			builder := _c.builders[i]
+			builder.defaults()
 			var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
 				mutation, ok := m.(*TeamMutation)
 				if !ok {
@@ -177,10 +210,6 @@ func (_c *TeamCreateBulk) Save(ctx context.Context) ([]*Team, error) {
 					return nil, err
 				}
 				mutation.id = &nodes[i].ID
-				if specs[i].ID.Value != nil {
-					id := specs[i].ID.Value.(int64)
-					nodes[i].ID = int(id)
-				}
 				mutation.done = true
 				return nodes[i], nil
 			})

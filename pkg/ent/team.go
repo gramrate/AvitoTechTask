@@ -9,13 +9,14 @@ import (
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
+	"github.com/google/uuid"
 )
 
 // Team is the model entity for the Team schema.
 type Team struct {
 	config `json:"-"`
 	// ID of the ent.
-	ID int `json:"id,omitempty"`
+	ID uuid.UUID `json:"id,omitempty"`
 	// TeamName holds the value of the "team_name" field.
 	TeamName string `json:"team_name,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
@@ -47,10 +48,10 @@ func (*Team) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case team.FieldID:
-			values[i] = new(sql.NullInt64)
 		case team.FieldTeamName:
 			values[i] = new(sql.NullString)
+		case team.FieldID:
+			values[i] = new(uuid.UUID)
 		default:
 			values[i] = new(sql.UnknownType)
 		}
@@ -67,11 +68,11 @@ func (_m *Team) assignValues(columns []string, values []any) error {
 	for i := range columns {
 		switch columns[i] {
 		case team.FieldID:
-			value, ok := values[i].(*sql.NullInt64)
-			if !ok {
-				return fmt.Errorf("unexpected type %T for field id", value)
+			if value, ok := values[i].(*uuid.UUID); !ok {
+				return fmt.Errorf("unexpected type %T for field id", values[i])
+			} else if value != nil {
+				_m.ID = *value
 			}
-			_m.ID = int(value.Int64)
 		case team.FieldTeamName:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field team_name", values[i])

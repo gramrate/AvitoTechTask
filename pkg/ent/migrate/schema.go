@@ -58,7 +58,7 @@ var (
 	}
 	// TeamsColumns holds the columns for the "teams" table.
 	TeamsColumns = []*schema.Column{
-		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "id", Type: field.TypeUUID, Unique: true},
 		{Name: "team_name", Type: field.TypeString, Unique: true},
 	}
 	// TeamsTable holds the schema information for the "teams" table.
@@ -80,7 +80,7 @@ var (
 		{Name: "username", Type: field.TypeString, Unique: true},
 		{Name: "is_active", Type: field.TypeBool, Default: true},
 		{Name: "pull_request_reviewers", Type: field.TypeUUID, Nullable: true},
-		{Name: "team_members", Type: field.TypeInt, Nullable: true},
+		{Name: "team_members", Type: field.TypeUUID, Nullable: true},
 	}
 	// UsersTable holds the schema information for the "users" table.
 	UsersTable = &schema.Table{

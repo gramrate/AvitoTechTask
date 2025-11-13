@@ -89,13 +89,13 @@ func (_u *UserUpdate) AddAssignedReviews(v ...*PullRequest) *UserUpdate {
 }
 
 // SetTeamID sets the "team" edge to the Team entity by ID.
-func (_u *UserUpdate) SetTeamID(id int) *UserUpdate {
+func (_u *UserUpdate) SetTeamID(id uuid.UUID) *UserUpdate {
 	_u.mutation.SetTeamID(id)
 	return _u
 }
 
 // SetNillableTeamID sets the "team" edge to the Team entity by ID if the given value is not nil.
-func (_u *UserUpdate) SetNillableTeamID(id *int) *UserUpdate {
+func (_u *UserUpdate) SetNillableTeamID(id *uuid.UUID) *UserUpdate {
 	if id != nil {
 		_u = _u.SetTeamID(*id)
 	}
@@ -313,7 +313,7 @@ func (_u *UserUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 			Columns: []string{user.TeamColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(team.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(team.FieldID, field.TypeUUID),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
@@ -326,7 +326,7 @@ func (_u *UserUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 			Columns: []string{user.TeamColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(team.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(team.FieldID, field.TypeUUID),
 			},
 		}
 		for _, k := range nodes {
@@ -413,13 +413,13 @@ func (_u *UserUpdateOne) AddAssignedReviews(v ...*PullRequest) *UserUpdateOne {
 }
 
 // SetTeamID sets the "team" edge to the Team entity by ID.
-func (_u *UserUpdateOne) SetTeamID(id int) *UserUpdateOne {
+func (_u *UserUpdateOne) SetTeamID(id uuid.UUID) *UserUpdateOne {
 	_u.mutation.SetTeamID(id)
 	return _u
 }
 
 // SetNillableTeamID sets the "team" edge to the Team entity by ID if the given value is not nil.
-func (_u *UserUpdateOne) SetNillableTeamID(id *int) *UserUpdateOne {
+func (_u *UserUpdateOne) SetNillableTeamID(id *uuid.UUID) *UserUpdateOne {
 	if id != nil {
 		_u = _u.SetTeamID(*id)
 	}
@@ -667,7 +667,7 @@ func (_u *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) {
 			Columns: []string{user.TeamColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(team.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(team.FieldID, field.TypeUUID),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
@@ -680,7 +680,7 @@ func (_u *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) {
 			Columns: []string{user.TeamColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(team.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(team.FieldID, field.TypeUUID),
 			},
 		}
 		for _, k := range nodes {
