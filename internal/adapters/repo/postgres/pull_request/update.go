@@ -8,7 +8,7 @@ import (
 	"github.com/google/uuid"
 )
 
-func (r *PullRequestRepository) GetWithReviewers(ctx context.Context, id uuid.UUID) (*ent.PullRequest, error) {
+func (r *Repo) GetWithReviewers(ctx context.Context, id uuid.UUID) (*ent.PullRequest, error) {
 	return r.client.PullRequest.Query().
 		Where(pullrequest.IDEQ(id)).
 		WithReviewers().

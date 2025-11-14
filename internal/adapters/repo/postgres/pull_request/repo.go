@@ -4,10 +4,10 @@ import (
 	"AvitoTechTask/pkg/ent"
 )
 
-type PullRequestRepository struct {
+type Repo struct {
 	client *ent.Client
 }
 
-func NewPullRequestRepository(client *ent.Client) *PullRequestRepository {
-	return &PullRequestRepository{client: client}
+func NewRepo(client *ent.Client) *Repo {
+	return &Repo{client: client}
 }

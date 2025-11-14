@@ -7,7 +7,7 @@ import (
 	"fmt"
 )
 
-func (r *UserRepository) UpdateActivity(ctx context.Context, userEntity *ent.User) (*ent.User, error) {
+func (r *Repo) UpdateActivity(ctx context.Context, userEntity *ent.User) (*ent.User, error) {
 	tx, err := r.client.Tx(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("starting transaction: %w", err)

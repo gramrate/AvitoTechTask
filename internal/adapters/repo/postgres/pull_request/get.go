@@ -11,13 +11,13 @@ import (
 	"github.com/google/uuid"
 )
 
-func (r *PullRequestRepository) Get(ctx context.Context, id uuid.UUID) (*ent.PullRequest, error) {
+func (r *Repo) Get(ctx context.Context, id uuid.UUID) (*ent.PullRequest, error) {
 	return r.client.PullRequest.Get(ctx, id)
 }
 
 // GetByReviewerIDInTransaction - возвращает PR для ревьювера в одной транзакции
 // status - опциональный фильтр по статусу (если nil, то не фильтруется)
-func (r *PullRequestRepository) GetByReviewerIDInTransaction(ctx context.Context, reviewerID uuid.UUID, status *types.PullRequestStatus) ([]*ent.PullRequest, error) {
+func (r *Repo) GetByReviewerIDInTransaction(ctx context.Context, reviewerID uuid.UUID, status *types.PullRequestStatus) ([]*ent.PullRequest, error) {
 	tx, err := r.client.Tx(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("starting transaction: %w", err)

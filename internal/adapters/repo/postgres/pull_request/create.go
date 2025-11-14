@@ -5,7 +5,7 @@ import (
 	"context"
 )
 
-func (r *PullRequestRepository) Create(ctx context.Context, prEntity *ent.PullRequest) (*ent.PullRequest, error) {
+func (r *Repo) Create(ctx context.Context, prEntity *ent.PullRequest) (*ent.PullRequest, error) {
 	create := r.client.PullRequest.Create().
 		SetID(prEntity.ID).
 		SetPullRequestName(prEntity.PullRequestName).

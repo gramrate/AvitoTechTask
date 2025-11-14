@@ -7,7 +7,7 @@ import (
 	"fmt"
 )
 
-func (r *UserRepository) CreateWithTeam(ctx context.Context, userEntity *ent.User) (*ent.User, error) {
+func (r *Repo) CreateWithTeam(ctx context.Context, userEntity *ent.User) (*ent.User, error) {
 	if userEntity.Edges.Team == nil {
 		return nil, fmt.Errorf("userEntity.Edges.Team must be set")
 	}
