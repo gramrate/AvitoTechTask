@@ -2,10 +2,6 @@ package team
 
 import (
 	"AvitoTechTask/pkg/ent"
-	"AvitoTechTask/pkg/ent/team"
-	"context"
-
-	"github.com/google/uuid"
 )
 
 //type TeamRepository interface {
@@ -21,11 +17,4 @@ type TeamRepository struct {
 
 func NewTeamRepository(client *ent.Client) *TeamRepository {
 	return &TeamRepository{client: client}
-}
-
-func (r *TeamRepository) GetWithMembers(ctx context.Context, teamID uuid.UUID) (*ent.Team, error) {
-	return r.client.Team.Query().
-		Where(team.IDEQ(teamID)).
-		WithMembers().
-		Only(ctx)
 }

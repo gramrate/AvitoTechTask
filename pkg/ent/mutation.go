@@ -3,6 +3,7 @@
 package ent
 
 import (
+	"AvitoTechTask/internal/domain/types"
 	"AvitoTechTask/pkg/ent/predicate"
 	"AvitoTechTask/pkg/ent/pullrequest"
 	"AvitoTechTask/pkg/ent/team"
@@ -39,7 +40,8 @@ type PullRequestMutation struct {
 	typ                      string
 	id                       *uuid.UUID
 	pull_request_name        *string
-	status                   *pullrequest.Status
+	status                   *types.PullRequestStatus
+	addstatus                *types.PullRequestStatus
 	assigned_reviewers       *[]uuid.UUID
 	appendassigned_reviewers []uuid.UUID
 	created_at               *time.Time
@@ -232,12 +234,13 @@ func (m *PullRequestMutation) ResetAuthorID() {
 }
 
 // SetStatus sets the "status" field.
-func (m *PullRequestMutation) SetStatus(pu pullrequest.Status) {
-	m.status = &pu
+func (m *PullRequestMutation) SetStatus(trs types.PullRequestStatus) {
+	m.status = &trs
+	m.addstatus = nil
 }
 
 // Status returns the value of the "status" field in the mutation.
-func (m *PullRequestMutation) Status() (r pullrequest.Status, exists bool) {
+func (m *PullRequestMutation) Status() (r types.PullRequestStatus, exists bool) {
 	v := m.status
 	if v == nil {
 		return
@@ -248,7 +251,7 @@ func (m *PullRequestMutation) Status() (r pullrequest.Status, exists bool) {
 // OldStatus returns the old "status" field's value of the PullRequest entity.
 // If the PullRequest object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *PullRequestMutation) OldStatus(ctx context.Context) (v pullrequest.Status, err error) {
+func (m *PullRequestMutation) OldStatus(ctx context.Context) (v types.PullRequestStatus, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldStatus is only allowed on UpdateOne operations")
 	}
@@ -262,9 +265,28 @@ func (m *PullRequestMutation) OldStatus(ctx context.Context) (v pullrequest.Stat
 	return oldValue.Status, nil
 }
 
+// AddStatus adds trs to the "status" field.
+func (m *PullRequestMutation) AddStatus(trs types.PullRequestStatus) {
+	if m.addstatus != nil {
+		*m.addstatus += trs
+	} else {
+		m.addstatus = &trs
+	}
+}
+
+// AddedStatus returns the value that was added to the "status" field in this mutation.
+func (m *PullRequestMutation) AddedStatus() (r types.PullRequestStatus, exists bool) {
+	v := m.addstatus
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
 // ResetStatus resets all changes to the "status" field.
 func (m *PullRequestMutation) ResetStatus() {
 	m.status = nil
+	m.addstatus = nil
 }
 
 // SetAssignedReviewers sets the "assigned_reviewers" field.
@@ -602,7 +624,7 @@ func (m *PullRequestMutation) SetField(name string, value ent.Value) error {
 		m.SetAuthorID(v)
 		return nil
 	case pullrequest.FieldStatus:
-		v, ok := value.(pullrequest.Status)
+		v, ok := value.(types.PullRequestStatus)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
@@ -636,13 +658,21 @@ func (m *PullRequestMutation) SetField(name string, value ent.Value) error {
 // AddedFields returns all numeric fields that were incremented/decremented during
 // this mutation.
 func (m *PullRequestMutation) AddedFields() []string {
-	return nil
+	var fields []string
+	if m.addstatus != nil {
+		fields = append(fields, pullrequest.FieldStatus)
+	}
+	return fields
 }
 
 // AddedField returns the numeric value that was incremented/decremented on a field
 // with the given name. The second boolean return value indicates that this field
 // was not set, or was not defined in the schema.
 func (m *PullRequestMutation) AddedField(name string) (ent.Value, bool) {
+	switch name {
+	case pullrequest.FieldStatus:
+		return m.AddedStatus()
+	}
 	return nil, false
 }
 
@@ -651,6 +681,13 @@ func (m *PullRequestMutation) AddedField(name string) (ent.Value, bool) {
 // type.
 func (m *PullRequestMutation) AddField(name string, value ent.Value) error {
 	switch name {
+	case pullrequest.FieldStatus:
+		v, ok := value.(types.PullRequestStatus)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddStatus(v)
+		return nil
 	}
 	return fmt.Errorf("unknown PullRequest numeric field %s", name)
 }

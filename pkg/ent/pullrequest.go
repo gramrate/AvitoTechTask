@@ -3,6 +3,7 @@
 package ent
 
 import (
+	"AvitoTechTask/internal/domain/types"
 	"AvitoTechTask/pkg/ent/pullrequest"
 	"AvitoTechTask/pkg/ent/user"
 	"encoding/json"
@@ -25,7 +26,7 @@ type PullRequest struct {
 	// AuthorID holds the value of the "author_id" field.
 	AuthorID uuid.UUID `json:"author_id,omitempty"`
 	// Status holds the value of the "status" field.
-	Status pullrequest.Status `json:"status,omitempty"`
+	Status types.PullRequestStatus `json:"status,omitempty"`
 	// AssignedReviewers holds the value of the "assigned_reviewers" field.
 	AssignedReviewers []uuid.UUID `json:"assigned_reviewers,omitempty"`
 	// CreatedAt holds the value of the "created_at" field.
@@ -77,7 +78,9 @@ func (*PullRequest) scanValues(columns []string) ([]any, error) {
 		switch columns[i] {
 		case pullrequest.FieldAssignedReviewers:
 			values[i] = new([]byte)
-		case pullrequest.FieldPullRequestName, pullrequest.FieldStatus:
+		case pullrequest.FieldStatus:
+			values[i] = new(sql.NullInt64)
+		case pullrequest.FieldPullRequestName:
 			values[i] = new(sql.NullString)
 		case pullrequest.FieldCreatedAt, pullrequest.FieldMergedAt:
 			values[i] = new(sql.NullTime)
@@ -119,10 +122,10 @@ func (_m *PullRequest) assignValues(columns []string, values []any) error {
 				_m.AuthorID = *value
 			}
 		case pullrequest.FieldStatus:
-			if value, ok := values[i].(*sql.NullString); !ok {
+			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field status", values[i])
 			} else if value.Valid {
-				_m.Status = pullrequest.Status(value.String)
+				_m.Status = types.PullRequestStatus(value.Int64)
 			}
 		case pullrequest.FieldAssignedReviewers:
 			if value, ok := values[i].(*[]byte); !ok {

@@ -3,6 +3,7 @@
 package pullrequest
 
 import (
+	"AvitoTechTask/internal/domain/types"
 	"AvitoTechTask/pkg/ent/predicate"
 	"time"
 
@@ -64,6 +65,12 @@ func PullRequestName(v string) predicate.PullRequest {
 // AuthorID applies equality check predicate on the "author_id" field. It's identical to AuthorIDEQ.
 func AuthorID(v uuid.UUID) predicate.PullRequest {
 	return predicate.PullRequest(sql.FieldEQ(FieldAuthorID, v))
+}
+
+// Status applies equality check predicate on the "status" field. It's identical to StatusEQ.
+func Status(v types.PullRequestStatus) predicate.PullRequest {
+	vc := int(v)
+	return predicate.PullRequest(sql.FieldEQ(FieldStatus, vc))
 }
 
 // CreatedAt applies equality check predicate on the "created_at" field. It's identical to CreatedAtEQ.
@@ -162,23 +169,57 @@ func AuthorIDNotIn(vs ...uuid.UUID) predicate.PullRequest {
 }
 
 // StatusEQ applies the EQ predicate on the "status" field.
-func StatusEQ(v Status) predicate.PullRequest {
-	return predicate.PullRequest(sql.FieldEQ(FieldStatus, v))
+func StatusEQ(v types.PullRequestStatus) predicate.PullRequest {
+	vc := int(v)
+	return predicate.PullRequest(sql.FieldEQ(FieldStatus, vc))
 }
 
 // StatusNEQ applies the NEQ predicate on the "status" field.
-func StatusNEQ(v Status) predicate.PullRequest {
-	return predicate.PullRequest(sql.FieldNEQ(FieldStatus, v))
+func StatusNEQ(v types.PullRequestStatus) predicate.PullRequest {
+	vc := int(v)
+	return predicate.PullRequest(sql.FieldNEQ(FieldStatus, vc))
 }
 
 // StatusIn applies the In predicate on the "status" field.
-func StatusIn(vs ...Status) predicate.PullRequest {
-	return predicate.PullRequest(sql.FieldIn(FieldStatus, vs...))
+func StatusIn(vs ...types.PullRequestStatus) predicate.PullRequest {
+	v := make([]any, len(vs))
+	for i := range v {
+		v[i] = int(vs[i])
+	}
+	return predicate.PullRequest(sql.FieldIn(FieldStatus, v...))
 }
 
 // StatusNotIn applies the NotIn predicate on the "status" field.
-func StatusNotIn(vs ...Status) predicate.PullRequest {
-	return predicate.PullRequest(sql.FieldNotIn(FieldStatus, vs...))
+func StatusNotIn(vs ...types.PullRequestStatus) predicate.PullRequest {
+	v := make([]any, len(vs))
+	for i := range v {
+		v[i] = int(vs[i])
+	}
+	return predicate.PullRequest(sql.FieldNotIn(FieldStatus, v...))
+}
+
+// StatusGT applies the GT predicate on the "status" field.
+func StatusGT(v types.PullRequestStatus) predicate.PullRequest {
+	vc := int(v)
+	return predicate.PullRequest(sql.FieldGT(FieldStatus, vc))
+}
+
+// StatusGTE applies the GTE predicate on the "status" field.
+func StatusGTE(v types.PullRequestStatus) predicate.PullRequest {
+	vc := int(v)
+	return predicate.PullRequest(sql.FieldGTE(FieldStatus, vc))
+}
+
+// StatusLT applies the LT predicate on the "status" field.
+func StatusLT(v types.PullRequestStatus) predicate.PullRequest {
+	vc := int(v)
+	return predicate.PullRequest(sql.FieldLT(FieldStatus, vc))
+}
+
+// StatusLTE applies the LTE predicate on the "status" field.
+func StatusLTE(v types.PullRequestStatus) predicate.PullRequest {
+	vc := int(v)
+	return predicate.PullRequest(sql.FieldLTE(FieldStatus, vc))
 }
 
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.

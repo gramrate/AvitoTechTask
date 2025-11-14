@@ -1,13 +1,14 @@
-// internal/ent/schema/pull_request.go
 package schema
 
 import (
+	"AvitoTechTask/internal/domain/types"
+	"time"
+
 	"entgo.io/ent"
 	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
 	"entgo.io/ent/schema/index"
 	"github.com/google/uuid"
-	"time"
 )
 
 // PullRequest holds the schema definition for the PullRequest entity.
@@ -24,8 +25,8 @@ func (PullRequest) Fields() []ent.Field {
 		field.String("pull_request_name").
 			NotEmpty(),
 		field.UUID("author_id", uuid.UUID{}),
-		field.Enum("status").
-			Values("open", "closed", "merged", "draft"),
+		field.Int("status").
+			GoType(types.PullRequestStatus(0)),
 		field.JSON("assigned_reviewers", []uuid.UUID{}).
 			Default([]uuid.UUID{}),
 		field.Time("created_at").

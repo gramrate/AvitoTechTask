@@ -3,6 +3,7 @@
 package ent
 
 import (
+	"AvitoTechTask/internal/domain/types"
 	"AvitoTechTask/pkg/ent/pullrequest"
 	"AvitoTechTask/pkg/ent/user"
 	"context"
@@ -35,7 +36,7 @@ func (_c *PullRequestCreate) SetAuthorID(v uuid.UUID) *PullRequestCreate {
 }
 
 // SetStatus sets the "status" field.
-func (_c *PullRequestCreate) SetStatus(v pullrequest.Status) *PullRequestCreate {
+func (_c *PullRequestCreate) SetStatus(v types.PullRequestStatus) *PullRequestCreate {
 	_c.mutation.SetStatus(v)
 	return _c
 }
@@ -173,11 +174,6 @@ func (_c *PullRequestCreate) check() error {
 	if _, ok := _c.mutation.Status(); !ok {
 		return &ValidationError{Name: "status", err: errors.New(`ent: missing required field "PullRequest.status"`)}
 	}
-	if v, ok := _c.mutation.Status(); ok {
-		if err := pullrequest.StatusValidator(v); err != nil {
-			return &ValidationError{Name: "status", err: fmt.Errorf(`ent: validator failed for field "PullRequest.status": %w`, err)}
-		}
-	}
 	if _, ok := _c.mutation.AssignedReviewers(); !ok {
 		return &ValidationError{Name: "assigned_reviewers", err: errors.New(`ent: missing required field "PullRequest.assigned_reviewers"`)}
 	}
@@ -227,7 +223,7 @@ func (_c *PullRequestCreate) createSpec() (*PullRequest, *sqlgraph.CreateSpec) {
 		_node.PullRequestName = value
 	}
 	if value, ok := _c.mutation.Status(); ok {
-		_spec.SetField(pullrequest.FieldStatus, field.TypeEnum, value)
+		_spec.SetField(pullrequest.FieldStatus, field.TypeInt, value)
 		_node.Status = value
 	}
 	if value, ok := _c.mutation.AssignedReviewers(); ok {

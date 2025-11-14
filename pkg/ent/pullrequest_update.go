@@ -3,6 +3,7 @@
 package ent
 
 import (
+	"AvitoTechTask/internal/domain/types"
 	"AvitoTechTask/pkg/ent/predicate"
 	"AvitoTechTask/pkg/ent/pullrequest"
 	"AvitoTechTask/pkg/ent/user"
@@ -60,16 +61,23 @@ func (_u *PullRequestUpdate) SetNillableAuthorID(v *uuid.UUID) *PullRequestUpdat
 }
 
 // SetStatus sets the "status" field.
-func (_u *PullRequestUpdate) SetStatus(v pullrequest.Status) *PullRequestUpdate {
+func (_u *PullRequestUpdate) SetStatus(v types.PullRequestStatus) *PullRequestUpdate {
+	_u.mutation.ResetStatus()
 	_u.mutation.SetStatus(v)
 	return _u
 }
 
 // SetNillableStatus sets the "status" field if the given value is not nil.
-func (_u *PullRequestUpdate) SetNillableStatus(v *pullrequest.Status) *PullRequestUpdate {
+func (_u *PullRequestUpdate) SetNillableStatus(v *types.PullRequestStatus) *PullRequestUpdate {
 	if v != nil {
 		_u.SetStatus(*v)
 	}
+	return _u
+}
+
+// AddStatus adds value to the "status" field.
+func (_u *PullRequestUpdate) AddStatus(v types.PullRequestStatus) *PullRequestUpdate {
+	_u.mutation.AddStatus(v)
 	return _u
 }
 
@@ -205,11 +213,6 @@ func (_u *PullRequestUpdate) check() error {
 			return &ValidationError{Name: "pull_request_name", err: fmt.Errorf(`ent: validator failed for field "PullRequest.pull_request_name": %w`, err)}
 		}
 	}
-	if v, ok := _u.mutation.Status(); ok {
-		if err := pullrequest.StatusValidator(v); err != nil {
-			return &ValidationError{Name: "status", err: fmt.Errorf(`ent: validator failed for field "PullRequest.status": %w`, err)}
-		}
-	}
 	if _u.mutation.AuthorCleared() && len(_u.mutation.AuthorIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "PullRequest.author"`)
 	}
@@ -232,7 +235,10 @@ func (_u *PullRequestUpdate) sqlSave(ctx context.Context) (_node int, err error)
 		_spec.SetField(pullrequest.FieldPullRequestName, field.TypeString, value)
 	}
 	if value, ok := _u.mutation.Status(); ok {
-		_spec.SetField(pullrequest.FieldStatus, field.TypeEnum, value)
+		_spec.SetField(pullrequest.FieldStatus, field.TypeInt, value)
+	}
+	if value, ok := _u.mutation.AddedStatus(); ok {
+		_spec.AddField(pullrequest.FieldStatus, field.TypeInt, value)
 	}
 	if value, ok := _u.mutation.AssignedReviewers(); ok {
 		_spec.SetField(pullrequest.FieldAssignedReviewers, field.TypeJSON, value)
@@ -374,16 +380,23 @@ func (_u *PullRequestUpdateOne) SetNillableAuthorID(v *uuid.UUID) *PullRequestUp
 }
 
 // SetStatus sets the "status" field.
-func (_u *PullRequestUpdateOne) SetStatus(v pullrequest.Status) *PullRequestUpdateOne {
+func (_u *PullRequestUpdateOne) SetStatus(v types.PullRequestStatus) *PullRequestUpdateOne {
+	_u.mutation.ResetStatus()
 	_u.mutation.SetStatus(v)
 	return _u
 }
 
 // SetNillableStatus sets the "status" field if the given value is not nil.
-func (_u *PullRequestUpdateOne) SetNillableStatus(v *pullrequest.Status) *PullRequestUpdateOne {
+func (_u *PullRequestUpdateOne) SetNillableStatus(v *types.PullRequestStatus) *PullRequestUpdateOne {
 	if v != nil {
 		_u.SetStatus(*v)
 	}
+	return _u
+}
+
+// AddStatus adds value to the "status" field.
+func (_u *PullRequestUpdateOne) AddStatus(v types.PullRequestStatus) *PullRequestUpdateOne {
+	_u.mutation.AddStatus(v)
 	return _u
 }
 
@@ -532,11 +545,6 @@ func (_u *PullRequestUpdateOne) check() error {
 			return &ValidationError{Name: "pull_request_name", err: fmt.Errorf(`ent: validator failed for field "PullRequest.pull_request_name": %w`, err)}
 		}
 	}
-	if v, ok := _u.mutation.Status(); ok {
-		if err := pullrequest.StatusValidator(v); err != nil {
-			return &ValidationError{Name: "status", err: fmt.Errorf(`ent: validator failed for field "PullRequest.status": %w`, err)}
-		}
-	}
 	if _u.mutation.AuthorCleared() && len(_u.mutation.AuthorIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "PullRequest.author"`)
 	}
@@ -576,7 +584,10 @@ func (_u *PullRequestUpdateOne) sqlSave(ctx context.Context) (_node *PullRequest
 		_spec.SetField(pullrequest.FieldPullRequestName, field.TypeString, value)
 	}
 	if value, ok := _u.mutation.Status(); ok {
-		_spec.SetField(pullrequest.FieldStatus, field.TypeEnum, value)
+		_spec.SetField(pullrequest.FieldStatus, field.TypeInt, value)
+	}
+	if value, ok := _u.mutation.AddedStatus(); ok {
+		_spec.AddField(pullrequest.FieldStatus, field.TypeInt, value)
 	}
 	if value, ok := _u.mutation.AssignedReviewers(); ok {
 		_spec.SetField(pullrequest.FieldAssignedReviewers, field.TypeJSON, value)

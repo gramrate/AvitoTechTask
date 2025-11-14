@@ -12,7 +12,7 @@ var (
 	PullRequestsColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeUUID, Unique: true},
 		{Name: "pull_request_name", Type: field.TypeString},
-		{Name: "status", Type: field.TypeEnum, Enums: []string{"open", "closed", "merged", "draft"}},
+		{Name: "status", Type: field.TypeInt},
 		{Name: "assigned_reviewers", Type: field.TypeJSON},
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "merged_at", Type: field.TypeTime, Nullable: true},

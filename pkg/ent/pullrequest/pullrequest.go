@@ -3,7 +3,6 @@
 package pullrequest
 
 import (
-	"fmt"
 	"time"
 
 	"entgo.io/ent/dialect/sql"
@@ -92,31 +91,6 @@ var (
 	// DefaultID holds the default value on creation for the "id" field.
 	DefaultID func() uuid.UUID
 )
-
-// Status defines the type for the "status" enum field.
-type Status string
-
-// Status values.
-const (
-	StatusOpen   Status = "open"
-	StatusClosed Status = "closed"
-	StatusMerged Status = "merged"
-	StatusDraft  Status = "draft"
-)
-
-func (s Status) String() string {
-	return string(s)
-}
-
-// StatusValidator is a validator for the "status" field enum values. It is called by the builders before save.
-func StatusValidator(s Status) error {
-	switch s {
-	case StatusOpen, StatusClosed, StatusMerged, StatusDraft:
-		return nil
-	default:
-		return fmt.Errorf("pullrequest: invalid enum value for status field: %q", s)
-	}
-}
 
 // OrderOption defines the ordering options for the PullRequest queries.
 type OrderOption func(*sql.Selector)
