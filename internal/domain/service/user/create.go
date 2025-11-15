@@ -24,13 +24,15 @@ func (s *Service) Create(ctx context.Context, req *dto.CreateUserRequest) (*dto.
 	}
 
 	response := &dto.CreateUserResponse{
-		UserID:   createdUser.ID,
-		Username: createdUser.Username,
-		IsActive: createdUser.IsActive,
+		User: dto.User{
+			UserID:   createdUser.ID,
+			Username: createdUser.Username,
+			IsActive: createdUser.IsActive,
+		},
 	}
 
 	if createdUser.Edges.Team != nil {
-		response.TeamName = createdUser.Edges.Team.TeamName
+		response.User.TeamName = createdUser.Edges.Team.TeamName
 	}
 
 	return response, nil

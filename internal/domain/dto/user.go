@@ -15,8 +15,9 @@ type CreateUserRequest struct {
 	TeamID   uuid.UUID `json:"team_id"`
 	IsActive bool      `json:"is_active"`
 }
-type CreateUserResponse User
-
+type CreateUserResponse struct {
+	User User `json:"user"`
+}
 type GetUsersPRRequest struct {
 	UserID uuid.UUID `json:"user_id" form:"user_id"`
 	Status string    `json:"status" form:"status"`
