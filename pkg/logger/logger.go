@@ -8,7 +8,7 @@ import (
 
 	"go.uber.org/zap"
 
-	"SportMafia/pkg/logger/types"
+	"AvitoTechTask/pkg/logger/types"
 
 	"go.uber.org/zap/zapcore"
 )

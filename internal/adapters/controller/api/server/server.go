@@ -50,10 +50,10 @@ func Setup(app *app.App) {
 		},
 	}))
 
-	addRouters(app)
+	route(app)
 }
 
-func addRouters(app *app.App) {
+func route(app *app.App) {
 	server := app.Server
 	serviceProvider := app.ServiceProvider
 
