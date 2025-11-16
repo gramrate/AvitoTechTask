@@ -1,6 +1,7 @@
 package user
 
 import (
+	"AvitoTechTask/internal/domain/errorz"
 	"AvitoTechTask/pkg/ent"
 	"AvitoTechTask/pkg/ent/user"
 	"context"
@@ -12,6 +13,15 @@ func (r *Repo) CreateWithTeam(ctx context.Context, userEntity *ent.User) (*ent.U
 		return nil, fmt.Errorf("userEntity.Edges.Team must be set")
 	}
 	teamID := userEntity.Edges.Team.ID
+
+	// Проверяем существование команды
+	_, err := r.client.Team.Get(ctx, teamID)
+	if err != nil {
+		if ent.IsNotFound(err) {
+			return nil, errorz.ErrTeamNotFound
+		}
+		return nil, fmt.Errorf("checking team existence: %w", err)
+	}
 
 	tx, err := r.client.Tx(ctx)
 	if err != nil {

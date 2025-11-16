@@ -11,8 +11,8 @@ import (
 func (s *Service) GetUserPullRequests(ctx context.Context, req *dto.GetUsersPRRequest) (*dto.GetUsersPRResponse, error) {
 
 	var statusPtr *types.PullRequestStatus
-	if req.Status != "" {
-		status, err := types.FromString(req.Status)
+	if req.Status != nil {
+		status, err := types.FromString(*req.Status)
 		if err != nil {
 			return nil, fmt.Errorf("invalid status '%s': %w", req.Status, err)
 		}
@@ -31,7 +31,7 @@ func (s *Service) GetUserPullRequests(ctx context.Context, req *dto.GetUsersPRRe
 			PullRequestID:   prEntity.ID,
 			PullRequestName: prEntity.PullRequestName,
 			AuthorID:        prEntity.AuthorID,
-			Status:          prEntity.Status,
+			Status:          prEntity.Status.String(),
 		}
 
 		pullRequests = append(pullRequests, prDTO)

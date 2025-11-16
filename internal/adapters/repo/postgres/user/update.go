@@ -1,6 +1,7 @@
 package user
 
 import (
+	"AvitoTechTask/internal/domain/errorz"
 	"AvitoTechTask/pkg/ent"
 	"AvitoTechTask/pkg/ent/user"
 	"context"
@@ -8,6 +9,15 @@ import (
 )
 
 func (r *Repo) UpdateActivity(ctx context.Context, userEntity *ent.User) (*ent.User, error) {
+	// Сначала проверяем существование пользователя
+	_, err := r.client.User.Get(ctx, userEntity.ID)
+	if err != nil {
+		if ent.IsNotFound(err) {
+			return nil, errorz.ErrUserNotFound
+		}
+		return nil, fmt.Errorf("checking user existence: %w", err)
+	}
+
 	tx, err := r.client.Tx(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("starting transaction: %w", err)

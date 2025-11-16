@@ -20,7 +20,7 @@ type CreateUserResponse struct {
 }
 type GetUsersPRRequest struct {
 	UserID uuid.UUID `json:"user_id" form:"user_id"`
-	Status string    `json:"status" form:"status"`
+	Status *string   `json:"status" form:"status"`
 }
 type GetUsersPRResponse struct {
 	UserID       uuid.UUID           `json:"user_id"`

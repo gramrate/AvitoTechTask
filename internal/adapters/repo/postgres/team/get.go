@@ -1,6 +1,7 @@
 package team
 
 import (
+	"AvitoTechTask/internal/domain/errorz"
 	"AvitoTechTask/pkg/ent"
 	"AvitoTechTask/pkg/ent/team"
 	"context"
@@ -9,12 +10,26 @@ import (
 )
 
 func (r *Repo) Get(ctx context.Context, teamID uuid.UUID) (*ent.Team, error) {
-	return r.client.Team.Get(ctx, teamID)
+	tm, err := r.client.Team.Get(ctx, teamID)
+	if err != nil {
+		if ent.IsNotFound(err) {
+			return nil, errorz.ErrTeamNotFound
+		}
+		return nil, err
+	}
+	return tm, nil
 }
 
 func (r *Repo) GetByNameWithMembers(ctx context.Context, name string) (*ent.Team, error) {
-	return r.client.Team.Query().
+	tm, err := r.client.Team.Query().
 		Where(team.TeamNameEQ(name)).
 		WithMembers().
 		Only(ctx)
+	if err != nil {
+		if ent.IsNotFound(err) {
+			return nil, errorz.ErrTeamNotFound
+		}
+		return nil, err
+	}
+	return tm, nil
 }

@@ -4,7 +4,6 @@ import (
 	"AvitoTechTask/internal/domain/dto"
 	"AvitoTechTask/pkg/ent"
 	"context"
-	"fmt"
 )
 
 //// Service интерфейс для работы с командами
