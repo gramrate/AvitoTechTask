@@ -11,7 +11,7 @@ var (
 	// PullRequestsColumns holds the columns for the "pull_requests" table.
 	PullRequestsColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeUUID, Unique: true},
-		{Name: "pull_request_name", Type: field.TypeString},
+		{Name: "pull_request_name", Type: field.TypeString, Unique: true},
 		{Name: "status", Type: field.TypeInt},
 		{Name: "assigned_reviewers", Type: field.TypeJSON},
 		{Name: "created_at", Type: field.TypeTime},

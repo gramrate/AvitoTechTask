@@ -7,21 +7,33 @@ import (
 	"errors"
 	"net/http"
 
+	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
 )
 
 func (h *Handler) GetUsersPRs(c echo.Context) error {
-	var req dto.GetUsersPRRequest
+	userIDStr := c.QueryParam("user_id")
+	status := c.QueryParam("status")
 
-	if err := h.formDecoder.Decode(&req, c.QueryParams()); err != nil {
+	// Парсим user_id
+	userID, err := uuid.Parse(userIDStr)
+	if err != nil {
 		return c.JSON(http.StatusBadRequest, dto.ErrorResponse{
 			Error: dto.ErrorDetails{
-				Code:    types.ErrorCodeBadRequest, // Исправлено
-				Message: "Invalid request parameters",
+				Code:    types.ErrorCodeBadRequest,
+				Message: "Invalid user_id format",
 			},
 		})
 	}
 
+	// Создаем запрос вручную
+	req := dto.GetUsersPRRequest{
+		UserID: userID,
+		Status: &status,
+	}
+	if status == "" {
+		req.Status = nil
+	}
 	if err := h.validator.ValidateData(req); err != nil {
 		return c.JSON(http.StatusBadRequest, dto.ErrorResponse{
 			Error: dto.ErrorDetails{
@@ -44,7 +56,7 @@ func (h *Handler) GetUsersPRs(c echo.Context) error {
 		return c.JSON(http.StatusInternalServerError, dto.ErrorResponse{
 			Error: dto.ErrorDetails{
 				Code:    types.ErrorCodeInternalError, // Исправлено
-				Message: "Internal server error",
+				Message: err.Error(),
 			},
 		})
 	}

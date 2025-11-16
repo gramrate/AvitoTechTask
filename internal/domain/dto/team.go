@@ -23,6 +23,6 @@ type CreateTeamResponse struct {
 }
 
 type GetTeamRequest struct {
-	TeamName string `json:"team_name"`
+	TeamName string `json:"team_name" form:"team_name"`
 }
 type GetTeamResponse Team

@@ -27,7 +27,10 @@ func (r *Repo) Get(ctx context.Context, id uuid.UUID) (*ent.PullRequest, error) 
 func (r *Repo) GetWithReviewers(ctx context.Context, id uuid.UUID) (*ent.PullRequest, error) {
 	pr, err := r.client.PullRequest.Query().
 		Where(pullrequest.IDEQ(id)).
-		WithReviewers().
+		WithReviewers(func(q *ent.UserQuery) {
+			// Явно указываем какие поля загружать у reviewers
+			q.Select("id", "username")
+		}).
 		Only(ctx)
 	if err != nil {
 		if ent.IsNotFound(err) {

@@ -23,15 +23,9 @@ func (s *Service) ReassignReviewer(ctx context.Context, req *dto.ReassignPRReque
 	if pr.Status == types.PullRequestStatusMerged {
 		return nil, fmt.Errorf("%w: cannot reassign reviewers for merged pull request", errorz.ErrPRMerged)
 	}
-
+	fmt.Println(pr.AssignedReviewers)
 	// Проверяем, что старый ревьювер действительно назначен на этот PR
-	isOldReviewerAssigned := false
-	for _, reviewer := range pr.Edges.Reviewers {
-		if reviewer.ID == req.OldReviewerID {
-			isOldReviewerAssigned = true
-			break
-		}
-	}
+	isOldReviewerAssigned := containsUUID(pr.AssignedReviewers, req.OldReviewerID)
 
 	if !isOldReviewerAssigned {
 		return nil, fmt.Errorf("%w: reviewer %s is not assigned to this pull request", errorz.ErrNotAssigned, req.OldReviewerID)
@@ -76,14 +70,19 @@ func (s *Service) convertToDTO(pr *ent.PullRequest) dto.PullRequest {
 
 	// Добавляем назначенных ревьюверов
 	if pr.Edges.Reviewers != nil {
-		dtoPR.AssignedReviewers = make([]dto.Reviewer, len(pr.Edges.Reviewers))
+		dtoPR.AssignedReviewers = make([]uuid.UUID, len(pr.Edges.Reviewers))
 		for i, reviewer := range pr.Edges.Reviewers {
-			dtoPR.AssignedReviewers[i] = dto.Reviewer{
-				UserID:   reviewer.ID,
-				Username: reviewer.Username,
-			}
+			dtoPR.AssignedReviewers[i] = reviewer.ID
 		}
 	}
 
 	return dtoPR
+}
+func containsUUID(slice []uuid.UUID, item uuid.UUID) bool {
+	for _, v := range slice {
+		if v == item {
+			return true
+		}
+	}
+	return false
 }

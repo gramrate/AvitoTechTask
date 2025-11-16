@@ -1,4 +1,4 @@
-package user
+package pr
 
 import (
 	"AvitoTechTask/internal/domain/dto"
@@ -10,8 +10,8 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-func (h *Handler) SetActive(c echo.Context) error {
-	var req dto.SetUserActivityRequest
+func (h *Handler) Merge(c echo.Context) error {
+	var req dto.MergePRRequest
 
 	if err := c.Bind(&req); err != nil {
 		return c.JSON(http.StatusBadRequest, dto.ErrorResponse{
@@ -31,9 +31,9 @@ func (h *Handler) SetActive(c echo.Context) error {
 		})
 	}
 
-	resp, err := h.userService.UpdateActivity(c.Request().Context(), &req)
+	resp, err := h.prService.Merge(c.Request().Context(), &req)
 	switch {
-	case errors.Is(err, errorz.ErrUserNotFound):
+	case errors.Is(err, errorz.ErrPRNotFound):
 		return c.JSON(http.StatusNotFound, dto.ErrorResponse{
 			Error: dto.ErrorDetails{
 				Code:    types.ErrorCodeNotFound,

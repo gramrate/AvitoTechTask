@@ -1,4 +1,4 @@
-package user
+package team
 
 import (
 	"AvitoTechTask/internal/domain/dto"
@@ -10,18 +10,17 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-func (h *Handler) SetActive(c echo.Context) error {
-	var req dto.SetUserActivityRequest
+func (h *Handler) Create(c echo.Context) error {
+	var req dto.CreateTeamRequest
 
 	if err := c.Bind(&req); err != nil {
 		return c.JSON(http.StatusBadRequest, dto.ErrorResponse{
 			Error: dto.ErrorDetails{
 				Code:    types.ErrorCodeBadRequest,
-				Message: "Invalid request parameters",
+				Message: err.Error(),
 			},
 		})
 	}
-
 	if err := h.validator.ValidateData(req); err != nil {
 		return c.JSON(http.StatusBadRequest, dto.ErrorResponse{
 			Error: dto.ErrorDetails{
@@ -31,12 +30,12 @@ func (h *Handler) SetActive(c echo.Context) error {
 		})
 	}
 
-	resp, err := h.userService.UpdateActivity(c.Request().Context(), &req)
+	resp, err := h.teamService.Create(c.Request().Context(), &req)
 	switch {
-	case errors.Is(err, errorz.ErrUserNotFound):
-		return c.JSON(http.StatusNotFound, dto.ErrorResponse{
+	case errors.Is(err, errorz.ErrTeamNameAlreadyUsed):
+		return c.JSON(http.StatusBadRequest, dto.ErrorResponse{
 			Error: dto.ErrorDetails{
-				Code:    types.ErrorCodeNotFound,
+				Code:    types.ErrorCodeTeamExists,
 				Message: err.Error(),
 			},
 		})
@@ -44,10 +43,10 @@ func (h *Handler) SetActive(c echo.Context) error {
 		return c.JSON(http.StatusInternalServerError, dto.ErrorResponse{
 			Error: dto.ErrorDetails{
 				Code:    types.ErrorCodeInternalError,
-				Message: "Internal server error",
+				Message: err.Error(),
 			},
 		})
 	}
 
-	return c.JSON(http.StatusOK, resp)
+	return c.JSON(http.StatusCreated, resp)
 }

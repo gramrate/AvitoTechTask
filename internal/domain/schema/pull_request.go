@@ -23,7 +23,7 @@ func (PullRequest) Fields() []ent.Field {
 			Default(uuid.New).
 			Unique(),
 		field.String("pull_request_name").
-			NotEmpty(),
+			NotEmpty().Unique(),
 		field.UUID("author_id", uuid.UUID{}),
 		field.Int("status").
 			GoType(types.PullRequestStatus(0)),

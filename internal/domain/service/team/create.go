@@ -23,6 +23,7 @@ func (s *Service) Create(ctx context.Context, req *dto.CreateTeamRequest) (*dto.
 	for i, member := range req.Members {
 		// Создаем пользователя через сервис пользователей
 		userResp, err := s.userService.Create(ctx, &dto.CreateUserRequest{
+			UserID:   member.UserID,
 			Username: member.Username,
 			TeamID:   team.ID,
 			IsActive: member.IsActive,

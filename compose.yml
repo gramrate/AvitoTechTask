@@ -3,7 +3,7 @@ version: '3.8'
 services:
   app:
     build: .
-    container_name: LeechApp
+    container_name: AvitoTechApp
     ports:
       - "8000:8000"
     env_file:
@@ -15,7 +15,7 @@ services:
 
   postgres:
     image: postgres:15-alpine
-    container_name: LeechPostgres
+    container_name: AvitoPostgres
     env_file:
       - .env
     environment:

@@ -39,7 +39,21 @@ func init() {
 	// teamDescTeamName is the schema descriptor for team_name field.
 	teamDescTeamName := teamFields[1].Descriptor()
 	// team.TeamNameValidator is a validator for the "team_name" field. It is called by the builders before save.
-	team.TeamNameValidator = teamDescTeamName.Validators[0].(func(string) error)
+	team.TeamNameValidator = func() func(string) error {
+		validators := teamDescTeamName.Validators
+		fns := [...]func(string) error{
+			validators[0].(func(string) error),
+			validators[1].(func(string) error),
+		}
+		return func(team_name string) error {
+			for _, fn := range fns {
+				if err := fn(team_name); err != nil {
+					return err
+				}
+			}
+			return nil
+		}
+	}()
 	// teamDescID is the schema descriptor for id field.
 	teamDescID := teamFields[0].Descriptor()
 	// team.DefaultID holds the default value on creation for the id field.

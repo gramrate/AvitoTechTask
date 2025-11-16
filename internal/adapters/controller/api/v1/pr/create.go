@@ -1,4 +1,4 @@
-package user
+package pr
 
 import (
 	"AvitoTechTask/internal/domain/dto"
@@ -10,8 +10,8 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-func (h *Handler) SetActive(c echo.Context) error {
-	var req dto.SetUserActivityRequest
+func (h *Handler) Create(c echo.Context) error {
+	var req dto.CreatePRRequest
 
 	if err := c.Bind(&req); err != nil {
 		return c.JSON(http.StatusBadRequest, dto.ErrorResponse{
@@ -31,13 +31,20 @@ func (h *Handler) SetActive(c echo.Context) error {
 		})
 	}
 
-	resp, err := h.userService.UpdateActivity(c.Request().Context(), &req)
+	resp, err := h.prService.Create(c.Request().Context(), &req)
 	switch {
-	case errors.Is(err, errorz.ErrUserNotFound):
-		return c.JSON(http.StatusNotFound, dto.ErrorResponse{
+	case errors.Is(err, errorz.ErrPRNameAlreadyUsed):
+		return c.JSON(http.StatusConflict, dto.ErrorResponse{ // 409 Conflict
+			Error: dto.ErrorDetails{
+				Code:    types.ErrorCodePRExists,
+				Message: "PR id already exists",
+			},
+		})
+	case errors.Is(err, errorz.ErrUserNotFound) || errors.Is(err, errorz.ErrTeamNotFound):
+		return c.JSON(http.StatusNotFound, dto.ErrorResponse{ // 404 Not Found
 			Error: dto.ErrorDetails{
 				Code:    types.ErrorCodeNotFound,
-				Message: err.Error(),
+				Message: "resource not found",
 			},
 		})
 	case err != nil:
@@ -49,5 +56,5 @@ func (h *Handler) SetActive(c echo.Context) error {
 		})
 	}
 
-	return c.JSON(http.StatusOK, resp)
+	return c.JSON(http.StatusCreated, resp)
 }

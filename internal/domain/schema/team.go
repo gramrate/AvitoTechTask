@@ -23,6 +23,7 @@ func (Team) Fields() []ent.Field {
 
 		field.String("team_name").
 			NotEmpty().
+			MinLen(1).
 			Unique(),
 	}
 }

@@ -27,7 +27,6 @@ func (r *Repo) CreateWithTeam(ctx context.Context, userEntity *ent.User) (*ent.U
 	if err != nil {
 		return nil, fmt.Errorf("starting transaction: %w", err)
 	}
-
 	createdUser, err := tx.User.Create().
 		SetID(userEntity.ID).
 		SetUsername(userEntity.Username).

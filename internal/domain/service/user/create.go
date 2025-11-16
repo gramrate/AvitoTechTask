@@ -9,6 +9,7 @@ import (
 
 func (s *Service) Create(ctx context.Context, req *dto.CreateUserRequest) (*dto.CreateUserResponse, error) {
 	user := &ent.User{
+		ID:       req.UserID,
 		Username: req.Username,
 		IsActive: req.IsActive,
 		Edges: ent.UserEdges{

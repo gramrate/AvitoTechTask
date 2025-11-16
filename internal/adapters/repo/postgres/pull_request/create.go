@@ -1,8 +1,11 @@
 package pull_request
 
 import (
+	"AvitoTechTask/internal/domain/errorz"
 	"AvitoTechTask/pkg/ent"
 	"context"
+	"fmt"
+	"strings"
 )
 
 func (r *Repo) Create(ctx context.Context, prEntity *ent.PullRequest) (*ent.PullRequest, error) {
@@ -17,5 +20,15 @@ func (r *Repo) Create(ctx context.Context, prEntity *ent.PullRequest) (*ent.Pull
 		create.SetMergedAt(*prEntity.MergedAt)
 	}
 
-	return create.Save(ctx)
+	pr, err := create.Save(ctx)
+	if err != nil {
+		if ent.IsConstraintError(err) {
+			// Проверяем, что ошибка связана с уникальностью ID PR
+			if strings.Contains(err.Error(), "id") || strings.Contains(err.Error(), "unique") || strings.Contains(err.Error(), "primary") {
+				return nil, fmt.Errorf("create pull request: %w", errorz.ErrPRNameAlreadyUsed)
+			}
+		}
+		return nil, fmt.Errorf("create pull request: %w", err)
+	}
+	return pr, nil
 }

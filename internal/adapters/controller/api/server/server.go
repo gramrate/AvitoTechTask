@@ -2,6 +2,9 @@ package server
 
 import (
 	"AvitoTechTask/internal/adapters/app"
+	"AvitoTechTask/internal/adapters/controller/api/v1/pr"
+	"AvitoTechTask/internal/adapters/controller/api/v1/team"
+	"AvitoTechTask/internal/adapters/controller/api/v1/user"
 	"io"
 
 	"github.com/labstack/echo/v4"
@@ -58,7 +61,14 @@ func route(app *app.App) {
 	serviceProvider := app.ServiceProvider
 
 	apiV1 := server.Group("/api/v1")
-	_ = serviceProvider
-	_ = apiV1
+
+	userHandler := user.NewHandler(serviceProvider.UserService(), serviceProvider.Validator(), serviceProvider.Decoder())
+	userHandler.Setup(apiV1)
+
+	teamHandler := team.NewHandler(serviceProvider.TeamService(), serviceProvider.Validator(), serviceProvider.Decoder())
+	teamHandler.Setup(apiV1)
+
+	prHandler := pr.NewHandler(serviceProvider.PRService(), serviceProvider.Validator())
+	prHandler.Setup(apiV1)
 
 }

@@ -35,8 +35,11 @@ func (r *Repo) ReassignReviewer(ctx context.Context, prID uuid.UUID, oldReviewer
 		return nil, fmt.Errorf("starting transaction: %w", err)
 	}
 
-	// Проверяем существование PR
-	_, err = tx.PullRequest.Get(ctx, prID)
+	// Получаем PR с ревьюверами чтобы получить текущий список
+	pr, err := tx.PullRequest.Query().
+		Where(pullrequest.IDEQ(prID)).
+		WithReviewers().
+		Only(ctx)
 	if err != nil {
 		if ent.IsNotFound(err) {
 			return nil, rollback(tx, errorz.ErrPRNotFound)
@@ -44,35 +47,26 @@ func (r *Repo) ReassignReviewer(ctx context.Context, prID uuid.UUID, oldReviewer
 		return nil, rollback(tx, fmt.Errorf("checking PR existence: %w", err))
 	}
 
-	// Проверяем существование старого ревьювера
-	_, err = tx.User.Get(ctx, oldReviewerID)
-	if err != nil {
-		if ent.IsNotFound(err) {
-			return nil, rollback(tx, errorz.ErrUserNotFound)
-		}
-		return nil, rollback(tx, fmt.Errorf("checking old reviewer existence: %w", err))
-	}
-
-	// Если указан новый ревьювер, проверяем его существование
-	if newReviewerID != uuid.Nil {
-		_, err = tx.User.Get(ctx, newReviewerID)
-		if err != nil {
-			if ent.IsNotFound(err) {
-				return nil, rollback(tx, errorz.ErrUserNotFound)
+	// Создаем новый список ревьюверов (заменяем старого на нового)
+	var newReviewerIDs []uuid.UUID
+	if pr.Edges.Reviewers != nil {
+		for _, reviewer := range pr.Edges.Reviewers {
+			if reviewer.ID != oldReviewerID {
+				newReviewerIDs = append(newReviewerIDs, reviewer.ID)
 			}
-			return nil, rollback(tx, fmt.Errorf("checking new reviewer existence: %w", err))
 		}
 	}
 
-	// Удаляем старого ревьювера и добавляем нового (если он указан)
-	update := tx.PullRequest.UpdateOneID(prID).
-		RemoveReviewerIDs(oldReviewerID)
-
+	// Добавляем нового ревьювера, если он указан
 	if newReviewerID != uuid.Nil {
-		update = update.AddReviewerIDs(newReviewerID)
+		newReviewerIDs = append(newReviewerIDs, newReviewerID)
 	}
 
-	_, err = update.Save(ctx)
+	// Обновляем PR с новым списком ревьюверов
+	_, err = tx.PullRequest.UpdateOneID(prID).
+		ClearReviewers().                  // Очищаем всех ревьюверов
+		AddReviewerIDs(newReviewerIDs...). // Добавляем новый список
+		Save(ctx)
 	if err != nil {
 		return nil, rollback(tx, fmt.Errorf("failed to update reviewers: %w", err))
 	}

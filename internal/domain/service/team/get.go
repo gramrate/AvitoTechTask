@@ -7,7 +7,7 @@ import (
 )
 
 // GetByNameWithMembers возвращает команду с участниками по имени
-func (s *Service) GetByNameWithMembers(ctx context.Context, req dto.GetTeamRequest) (*dto.GetTeamResponse, error) {
+func (s *Service) GetByNameWithMembers(ctx context.Context, req *dto.GetTeamRequest) (*dto.GetTeamResponse, error) {
 	team, err := s.teamRepo.GetByNameWithMembers(ctx, req.TeamName)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get team: %w", err)

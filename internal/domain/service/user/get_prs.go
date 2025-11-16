@@ -9,7 +9,6 @@ import (
 
 // GetUserPullRequests возвращает все PR, где пользователь назначен ревьювером.
 func (s *Service) GetUserPullRequests(ctx context.Context, req *dto.GetUsersPRRequest) (*dto.GetUsersPRResponse, error) {
-
 	var statusPtr *types.PullRequestStatus
 	if req.Status != nil {
 		status, err := types.FromString(*req.Status)
@@ -18,7 +17,6 @@ func (s *Service) GetUserPullRequests(ctx context.Context, req *dto.GetUsersPRRe
 		}
 		statusPtr = &status
 	}
-
 	pullRequestEntities, err := s.pullRequestsRepo.GetByReviewerIDInTransaction(ctx, req.UserID, statusPtr)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get user's assigned pull requests: %w", err)
