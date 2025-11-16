@@ -1,0 +1,21 @@
+service:
+  database:
+    host: 'localhost'
+    user: 'user'
+    password: 'password'
+    port: 5432
+    name: 'db'
+    ssl-mode: 'disable'
+backend:
+  host: "0.0.0.0"
+  port: 8000
+  dev-mode: true
+  tls:
+    enabled: false
+    port: 443
+settings:
+  timezone: 'Europe/Moscow'
+  debug: true
+  logger:
+    log-to-file: false
+    logs-dir: 'logs'
