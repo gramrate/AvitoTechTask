@@ -9,3 +9,5 @@ ent new --target internal/domain/schema [TableName]
 ```shell
 ent generate --target ./pkg/ent ./internal/domain/schema
 ```
+
+Перед использованием надо поставить ent локально, либо запускать через go run
